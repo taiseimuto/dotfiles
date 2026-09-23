@@ -17,10 +17,7 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(display-line-numbers-width-start t)
- '(package-selected-packages
-   '(auctex catppuccin-theme centaur-tabs corfu doom-modeline
-	    evil-collection evil-goggles geiser-gauche markdown-mode
-	    pet rust-mode sly valign vterm xclip)))
+ '(package-selected-packages nil))
 
 ;; ============================================================
 ;; Memo 

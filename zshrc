@@ -1,176 +1,21 @@
-#
-# ~/.zshrc
-#
-# 構成:
-#   1. PATH
-#   2. 履歴
-#   3. 補完 (fish 風のリッチな補完)
-#   4. プラグイン
-#        - zsh-autosuggestions (fish 風の履歴サジェスト)
-#        - oh-my-zsh 由来の clipcopy / copyfile / copypath (自作せず既存資産を利用)
-#   5. プロンプト (git ブランチ表示)
-#   6. エイリアス
-#   7. 関数 (activate / proxy / proxyoff)
-#   8. Emacs (vterm) 連携
-#   9. プラグイン: zsh-syntax-highlighting (必ず最後に読み込む)
-#  10. 依存コマンドチェック
-#
+export ZSH="$HOME/.oh-my-zsh"
+export LANG=en_US.UTF-8
+
+
 
 # ---------------------------------------------------------------------------
-# 1. PATH
+# PATH
 # ---------------------------------------------------------------------------
 
 typeset -U path PATH   # 重複を自動的に除去する
 path=("$HOME/.local/bin" $path)
 
 
-# ---------------------------------------------------------------------------
-# 2. 履歴
-# ---------------------------------------------------------------------------
-
-HISTFILE="$HOME/.zsh_history"
-HISTSIZE=100000
-SAVEHIST=100000
-
-setopt EXTENDED_HISTORY       # タイムスタンプを記録
-setopt HIST_IGNORE_DUPS       # 直前と同じコマンドは記録しない
-setopt HIST_IGNORE_SPACE      # 先頭がスペースのコマンドは記録しない
-setopt HIST_EXPIRE_DUPS_FIRST
-setopt HIST_VERIFY            # !$ などの展開結果を確認してから実行
-setopt SHARE_HISTORY          # 複数シェル間で履歴を共有
-setopt INC_APPEND_HISTORY     # コマンド実行直後に履歴へ追記
-
-# ---------------------------------------------------------------------------
-# 3. 補完 (fish 風のリッチな補完)
-# ---------------------------------------------------------------------------
-#   apt のパッケージ名補完やサブコマンド補完は、システムに入っている
-#   補完関数 (/usr/share/zsh/functions/... 等) が fpath 上にあれば
-#   compinit だけで有効になる。
-#
-#   [高速化] compinit はデフォルトだと毎回 compaudit (fpath 上の全ディレクトリの
-#   権限チェック) を行い、これが起動時間を押し上げる要因になりやすい。
-#   .zcompdump の更新から24時間以内なら -C (監査スキップ) で高速に済ませ、
-#   24時間以上経っていたら通常通りフルチェックする。
-
-autoload -Uz compinit
-
-ZCOMPDUMP="$HOME/.zcompdump"
-if [[ -n "$ZCOMPDUMP"(#qN.mh+24) ]]; then
-    # 24時間以上更新されていない (または初回) -> フルチェック
-    compinit -d "$ZCOMPDUMP"
-else
-    # 24時間以内 -> 監査をスキップして高速に読み込む
-    compinit -C -d "$ZCOMPDUMP"
-fi
-unset ZCOMPDUMP
-
-zmodload zsh/complist
-
-zstyle ':completion:*' menu select                          # Tab で選択式メニュー
-zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}'    # 大文字小文字を区別しない
-zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
-zstyle ':completion:*' group-name ''
-zstyle ':completion:*:descriptions' format '%F{yellow}-- %d --%f'
-zstyle ':completion:*:*:*:*:processes' command "ps -u $USER -o pid,user,comm -w -w"
-zstyle ':completion:*' verbose yes
-
-bindkey -M menuselect '^[[Z' reverse-menu-complete  # Shift-Tab で逆順に選択
-
-# ---------------------------------------------------------------------------
-# 4. プラグイン: zsh-autosuggestions
-# ---------------------------------------------------------------------------
-#   fish のような「薄い文字での過去履歴からのサジェスト」を実現する。
-#   未インストールなら自動で clone する (git がない環境ではスキップ)。
-
-ZSH_PLUGIN_DIR="$HOME/.zsh/plugins"
-
-_zsh_plugin_load() {
-    local repo="$1" name="$2" entry="$3"
-    local dir="$ZSH_PLUGIN_DIR/$name"
-
-    if [[ ! -d "$dir" ]] && command -v git &>/dev/null; then
-        mkdir -p "$ZSH_PLUGIN_DIR"
-        git clone --depth=1 "https://github.com/${repo}.git" "$dir" 2>/dev/null
-    fi
-
-    [[ -f "$dir/$entry" ]] && source "$dir/$entry"
-}
-
-_zsh_plugin_load "zsh-users/zsh-autosuggestions" "zsh-autosuggestions" "zsh-autosuggestions.zsh"
-
-ZSH_AUTOSUGGEST_STRATEGY=(history completion)
-ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=8'   # 薄いグレーで表示
-
-# --- クリップボード / copyfile / copypath -----------------------------------
-
-_zsh_fetch_source() {
-    local url="$1" dest="$2"
-
-    if [[ ! -f "$dest" ]] && command -v curl &>/dev/null; then
-        mkdir -p "${dest:h}"
-        curl -fsSL "$url" -o "$dest" 2>/dev/null
-    fi
-
-    [[ -f "$dest" ]] && source "$dest"
-}
-
-OMZ_RAW_BASE="https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master"
-OMZ_CACHE_DIR="$ZSH_PLUGIN_DIR/ohmyzsh"
-
-_zsh_fetch_source "$OMZ_RAW_BASE/lib/clipboard.zsh"                       "$OMZ_CACHE_DIR/clipboard.zsh"
-_zsh_fetch_source "$OMZ_RAW_BASE/plugins/copyfile/copyfile.plugin.zsh"    "$OMZ_CACHE_DIR/copyfile.plugin.zsh"
-_zsh_fetch_source "$OMZ_RAW_BASE/plugins/copypath/copypath.plugin.zsh"    "$OMZ_CACHE_DIR/copypath.plugin.zsh"
 
 
 # ---------------------------------------------------------------------------
-# 5. プロンプト (git ブランチ表示 + fish 風のパス短縮)
+# 関数
 # ---------------------------------------------------------------------------
-
-autoload -Uz vcs_info
-setopt PROMPT_SUBST
-
-zstyle ':vcs_info:*' enable git
-zstyle ':vcs_info:git:*' formats ' (%b)'
-zstyle ':vcs_info:git:*' actionformats ' (%b|%a)'
-
-precmd_functions+=(vcs_info)
-
-# fish のように、最後のディレクトリ以外は先頭1文字に短縮する
-_prompt_pwd() {
-    local pwd_short="${PWD/#$HOME/~}"
-    local -a parts
-    parts=("${(s:/:)pwd_short}")
-
-    local n=${#parts[@]}
-    local i
-    for (( i = 1; i < n; i++ )); do
-        if [[ "${parts[$i]}" == .* ]]; then
-            parts[$i]="${parts[$i]:0:2}"
-        else
-            parts[$i]="${parts[$i]:0:1}"
-        fi
-    done
-
-    print -n "${(j:/:)parts}"
-}
-
-
-PROMPT='%F{cyan}%n@%m%f %F{blue}$(_prompt_pwd)%f%F{green}${vcs_info_msg_0_}%f %# '
-
-
-# ---------------------------------------------------------------------------
-# 6. エイリアス
-# ---------------------------------------------------------------------------
-
-alias ls='eza --group-directories-first --color=auto --icons'
-alias ll='eza -lah'
-alias cat='bat --style=plain'
-
-# ---------------------------------------------------------------------------
-# 7. 関数
-# ---------------------------------------------------------------------------
-
-# copyfile / copypath は 4 章で oh-my-zsh から読み込み済み (ここでは定義しない)
 
 # --- Python 仮想環境 ---------------------------------------------------------
 
@@ -229,117 +74,40 @@ proxyoff() {
     echo "プロキシを無効化しました"
 }
 
-# ---------------------------------------------------------------------------
-# 8. Emacs (vterm) 連携
-# ---------------------------------------------------------------------------
-#   emacs-libvterm 公式が配布している etc/emacs-vterm-zsh.sh の推奨実装に
-#   ほぼ準拠 (https://github.com/akermu/emacs-libvterm/blob/master/etc/emacs-vterm-zsh.sh)。
-#   - vterm_printf: emacs へエスケープシーケンスを送る低レベル関数
-#   - vterm_prompt_end: プロンプト末尾に埋め込み、カレントディレクトリを emacs 側と同期
-#   - vterm_cmd: emacs 側で任意の elisp コマンドを実行させる
-#   - e: vterm 内なら find-file を emacs 上で実行し、新規バッファで開く。
-#        vterm の外 (通常のターミナル等) では emacsclient にフォールバックする。
-#
-#   注意: 公式ファイルには chpwd 毎にターミナルのタイトルバーを同期する
-#   add-zsh-hook も含まれるが、zsh-autosuggestions と衝突する既知の不具合が
-#   報告されている (https://github.com/akermu/emacs-libvterm/issues/574) ため、
-#   今回の要件にない機能でもあり、ここでは意図的に含めていない。
 
-vterm_printf() {
-    if [[ -n "$TMUX" ]] && { [[ "${TERM%%-*}" == "tmux" ]] || [[ "${TERM%%-*}" == "screen" ]]; }; then
-        # tmux 経由でも emacs までエスケープシーケンスを通す
-        printf "\ePtmux;\e\e]%s\007\e\\" "$1"
-    elif [[ "${TERM%%-*}" == "screen" ]]; then
-        printf "\eP\e]%s\007\e\\" "$1"
-    else
-        printf "\e]%s\e\\" "$1"
-    fi
-}
+# ---------------------------------------------------------------------------
+# Oh-My-Zsh
+# ---------------------------------------------------------------------------
 
-# vterm 内で clear を打つと、画面外のスクロールバックごと完全に消去する
-if [[ "$INSIDE_EMACS" == "vterm" ]]; then
-    alias clear='vterm_printf "51;Evterm-clear-scrollback"; tput clear'
+ZSH_THEME="simple"
+plugins=(git copypath copyfile github brew zsh-autosuggestions zsh-syntax-highlighting zsh-completions shrink-path)
+
+source $ZSH/oh-my-zsh.sh
+
+# PROMPT='%{$fg[green]%}$(shrink_path -f)%{$reset_color%} $ '
+PROMPT='%{$fg[cyan]%}%n@%m%{$reset_color%}:%{$fg[green]%}$(shrink_path -f)%{$reset_color%}$(git_prompt_info) $ '
+
+
+# ---------------------------------------------------------------------------
+# Alias
+# ---------------------------------------------------------------------------
+export CLAUDE_CODE_PLUGIN_KEEP_MARKETPLACE_ON_FAILURE=1
+
+alias ls='eza --group-directories-first --color=auto --icons=always'
+alias ll='eza -lah'
+alias cat='bat --style=plain'
+alias v='nvim'
+alias memo='nvim ~/memo.md'
+alias claude='caffeinate claude'
+
+
+if [[ -n $SSH_CONNECTION ]]; then
+  export EDITOR='vim'
+else
+  export EDITOR='nvim'
 fi
 
-vterm_prompt_end() {
-    vterm_printf "51;A$(printf "%s" "$PWD" | sed 's|\\|\\\\|g;s/"/\\"/g')"
-}
 
-vterm_cmd() {
-    local vterm_elisp=""
-    while [[ $# -gt 0 ]]; do
-        vterm_elisp+=$(printf '"%s" ' "$(printf "%s" "$1" | sed 's|\\|\\\\|g;s/"/\\"/g')")
-        shift
-    done
-    vterm_printf "51;E$vterm_elisp"
-}
-
-# vterm (INSIDE_EMACS に "vterm" を含む) の場合のみ、プロンプトに同期用シーケンスを付与
-if [[ -n "$INSIDE_EMACS" && "$INSIDE_EMACS" == *"vterm"* ]]; then
-    precmd_functions+=(vterm_prompt_end)
-fi
-
-# `e filename` でファイルを開く
-alias e="emacsclient -nw -a ''"
-# e() {
-#     if [[ -n "$INSIDE_EMACS" && "$INSIDE_EMACS" == *"vterm"* ]]; then
-#         vterm_cmd find-file "$(realpath "${1:-.}")"
-#     elif command -v emacsclient &>/dev/null; then
-#         emacsclient -n "${1:-.}"
-#     else
-#         echo "e: emacsclient が見つかりません" >&2
-#         return 1
-#     fi
-# }
-
-
-# ---------------------------------------------------------------------------
-# linuxbrew
-# ---------------------------------------------------------------------------
-
-export HOMEBREW_PREFIX="/home/linuxbrew/.linuxbrew";
-export HOMEBREW_CELLAR="/home/linuxbrew/.linuxbrew/Cellar";
-export HOMEBREW_REPOSITORY="/home/linuxbrew/.linuxbrew/Homebrew";
-fpath[1,0]="/home/linuxbrew/.linuxbrew/share/zsh/site-functions";
-export FPATH;
-export PATH="/home/linuxbrew/.linuxbrew/bin:/home/linuxbrew/.linuxbrew/sbin${PATH+:$PATH}";
-[ -z "${MANPATH-}" ] || export MANPATH=":${MANPATH#:}";
-export INFOPATH="/home/linuxbrew/.linuxbrew/share/info:${INFOPATH:-}";
-
-
-# ---------------------------------------------------------------------------
-# 9. プラグイン: zsh-syntax-highlighting (必ず一番最後に読み込む)
-# ---------------------------------------------------------------------------
-
-_zsh_plugin_load "zsh-users/zsh-syntax-highlighting" "zsh-syntax-highlighting" "zsh-syntax-highlighting.zsh"
-
-# ---------------------------------------------------------------------------
-# 10. 依存コマンドチェック
-# ---------------------------------------------------------------------------
-#   起動時に一度だけ、設定が前提としている外部コマンドの有無を確認する。
-
-_zsh_check_deps() {
-    local missing=()
-    local cmd
-    for cmd in eza bat git curl emacsclient; do
-        command -v "$cmd" &>/dev/null || missing+=("$cmd")
-    done
-
-    if (( ${#missing[@]} > 0 )); then
-        echo "警告: 次のコマンドが見つかりません: ${missing[*]}" >&2
-    fi
-}
-
-_zsh_check_deps
-
-# [削除] ここに以前あった `cd "$HOME"` を削除しました。
-# これがあると、起動ディレクトリを指定して zsh を開いても
-# 強制的にホームディレクトリへ移動させられてしまうため
-# (例: `cd ~/work/project && zsh` としてもホームに飛ばされる)。
-# zsh は何もしなければ起動時のカレントディレクトリをそのまま保持します。
-
-
-export NVM_DIR="$HOME/.nvm"
 
 # ---------------------------------------------------------------------------
 # NVM の遅延読み込み
@@ -351,21 +119,24 @@ export NVM_DIR="$HOME/.nvm"
 #
 #   使い方は今まで通り (`nvm use 18`, `node -v` など) で変わらない。
 #   初回呼び出し時だけ少し待つが、2回目以降は通常通りの速度で動作する。
+export NVM_DIR="$HOME/.nvm"
 
-_nvm_lazy_load() {
+#   NOTE: ヘルパ名は先頭アンダースコアを付けない。Claude Code が非対話シェル用に
+#   取得する shell snapshot は `_` 始まりの関数を «内部用» として除外するため、
+#   `_nvm_lazy_load` だと wrapper だけが取り込まれてヘルパが失われ、
+#   node/npm/npx が「command not found: _nvm_lazy_load」で全滅する。
+nvm_lazy_load() {
     unset -f nvm node npm npx
     [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
     [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
 }
 
-nvm()  { _nvm_lazy_load; nvm "$@"; }
-node() { _nvm_lazy_load; node "$@"; }
-npm()  { _nvm_lazy_load; npm "$@"; }
-npx()  { _nvm_lazy_load; npx "$@"; }
+nvm()  { nvm_lazy_load; nvm "$@"; }
+node() { nvm_lazy_load; node "$@"; }
+npm()  { nvm_lazy_load; npm "$@"; }
+npx()  { nvm_lazy_load; npx "$@"; }
 
 
-# Added by Antigravity CLI installer
-export PATH="/home/mt/.local/bin:$PATH"
 
-# opencode
-export PATH=/home/mt/.opencode/bin:$PATH
+# Added by codebase-memory-mcp install
+export PATH="/Users/mt/.local/bin:$PATH"
