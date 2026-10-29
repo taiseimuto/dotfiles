@@ -36,6 +36,20 @@ activate() {
     return 1
 }
 
+
+# --- Codex ---------------------------------------------------------------
+# 会社用 Codex
+codex-work() {
+  CODEX_HOME="$HOME/.codex-work" command codex "$@"
+}
+
+# 個人用 Codex
+codex-personal() {
+  CODEX_HOME="$HOME/.codex-personal" command codex --yolo "$@"
+}
+
+alias codex="codex-work --yolo"
+
 # --- プロキシ ---------------------------------------------------------------
 
 readonly PROXY_HOST="po.cc.ibaraki-ct.ac.jp"
@@ -49,7 +63,7 @@ proxy() {
     export HTTP_PROXY="$PROXY_URL"
     export HTTPS_PROXY="$PROXY_URL"
     export FTP_PROXY="$PROXY_URL"
-    export no_proxy="localhost,127.0.0.1"
+    export no_proxy="localhost,127.0.0.1,0.0.0.0"
 
     if command -v gsettings &>/dev/null; then
         gsettings set org.gnome.system.proxy mode 'manual'
@@ -80,7 +94,7 @@ proxyoff() {
 # ---------------------------------------------------------------------------
 
 ZSH_THEME="simple"
-plugins=(git copypath copyfile github brew zsh-autosuggestions zsh-syntax-highlighting zsh-completions shrink-path)
+plugins=(git copypath copyfile gh brew zsh-autosuggestions zsh-syntax-highlighting zsh-completions shrink-path)
 
 source $ZSH/oh-my-zsh.sh
 
@@ -91,15 +105,16 @@ PROMPT='%{$fg[cyan]%}%n@%m%{$reset_color%}:%{$fg[green]%}$(shrink_path -f)%{$res
 # ---------------------------------------------------------------------------
 # Alias
 # ---------------------------------------------------------------------------
-export CLAUDE_CODE_PLUGIN_KEEP_MARKETPLACE_ON_FAILURE=1
 
-alias ls='eza --group-directories-first --color=auto --icons=always'
+#alias ls='eza --group-directories-first --color=auto --icons=always'
+alias ls='eza --group-directories-first --color=auto --icons=auto'
 alias ll='eza -lah'
 alias cat='bat --style=plain'
 alias v='nvim'
 alias memo='nvim ~/memo.md'
-alias claude='caffeinate claude'
+alias oc=opencode
 
+alias md2html='/Users/mt/workspace/tools/markdown-to-html/.venv/bin/md2html'
 
 if [[ -n $SSH_CONNECTION ]]; then
   export EDITOR='vim'
@@ -140,3 +155,7 @@ npx()  { nvm_lazy_load; npx "$@"; }
 
 # Added by codebase-memory-mcp install
 export PATH="/Users/mt/.local/bin:$PATH"
+
+# eMudhra 中間CA鍵漏洩対応: 修正済みのシステム証明書をAWS CLIで使用
+export AWS_CA_BUNDLE=/etc/ssl/cert.pem
+
