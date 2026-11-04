@@ -12,6 +12,7 @@
     ("nvim"                 ".config/nvim")
     ("tmux.conf"            ".tmux.conf")
     ("config.fish"          ".config/fish/config.fish"          optional)
+    ("sway_config"          ".config/sway/config"          optional)
     ("foot.ini"             ".config/foot/foot.ini"             optional)
     ("zshrc"                ".zshrc")
     ("macskk_dict"          "Library/Containers/net.mtgto.inputmethod.macSKK/Data/Documents/Dictionaries/skk-jisyo.utf8"   optional)

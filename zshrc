@@ -114,7 +114,6 @@ alias v='nvim'
 alias memo='nvim ~/memo.md'
 alias oc=opencode
 
-alias md2html='/Users/mt/workspace/tools/markdown-to-html/.venv/bin/md2html'
 
 if [[ -n $SSH_CONNECTION ]]; then
   export EDITOR='vim'
@@ -124,38 +123,4 @@ fi
 
 
 
-# ---------------------------------------------------------------------------
-# NVM の遅延読み込み
-# ---------------------------------------------------------------------------
-#   [高速化] nvm.sh は内部で多数の関数定義や補完設定を行うため、
-#   素直に source すると起動時間に数百ms〜1秒近く上乗せされることが多い。
-#   nvm/node/npm/npx を「実際に使うときだけ」読み込むようにし、
-#   使わないシェルの起動を高速に保つ。
-#
-#   使い方は今まで通り (`nvm use 18`, `node -v` など) で変わらない。
-#   初回呼び出し時だけ少し待つが、2回目以降は通常通りの速度で動作する。
-export NVM_DIR="$HOME/.nvm"
-
-#   NOTE: ヘルパ名は先頭アンダースコアを付けない。Claude Code が非対話シェル用に
-#   取得する shell snapshot は `_` 始まりの関数を «内部用» として除外するため、
-#   `_nvm_lazy_load` だと wrapper だけが取り込まれてヘルパが失われ、
-#   node/npm/npx が「command not found: _nvm_lazy_load」で全滅する。
-nvm_lazy_load() {
-    unset -f nvm node npm npx
-    [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-    [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
-}
-
-nvm()  { nvm_lazy_load; nvm "$@"; }
-node() { nvm_lazy_load; node "$@"; }
-npm()  { nvm_lazy_load; npm "$@"; }
-npx()  { nvm_lazy_load; npx "$@"; }
-
-
-
-# Added by codebase-memory-mcp install
-export PATH="/Users/mt/.local/bin:$PATH"
-
-# eMudhra 中間CA鍵漏洩対応: 修正済みのシステム証明書をAWS CLIで使用
-export AWS_CA_BUNDLE=/etc/ssl/cert.pem
-
+eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv zsh)"

@@ -1,4 +1,4 @@
-default_border pixel 0
+default_border pixel 1
 
 seat seat0 xcursor_theme Adwaita 32
 
@@ -19,7 +19,7 @@ set $down j
 set $up k
 set $right l
 # Your preferred terminal emulator
-set $term alacritty
+set $term foot
 # Your preferred application launcher
 set $menu wmenu-run
 
@@ -28,30 +28,28 @@ set $rofi_cmd rofi \
 set $menu $rofi_cmd -show combi -combi-modes drun#run -modes combi
 
 # ------------------------------------
-# emacs
+# GTK Theme
 # ------------------------------------
-bindsym $mod+e exec emacsclient -c -a ""
+set $gnome-schema org.gnome.desktop.interface
+
+exec_always {
+    gsettings set $gnome-schema gtk-theme 'adw-gtk3-dark'
+    gsettings set org.gnome.desktop.interface color-scheme 'prefer-dark'
+    #gsettings set $gnome-schema icon-theme 'YourIconTheme'
+    #gsettings set $gnome-schema cursor-theme 'YourCursorTheme'
+    #gsettings set $gnome-schema font-name 'YourFontName 11'
+}
+
 
 # ------------------------------------
 # File Search
 # ------------------------------------
-for_window [app_id="yazi-drop"] floating enable
-for_window [app_id="yazi-drop"] border pixel 1
-bindsym $mod+Shift+d exec foot --app-id yazi-drop yazi
-
-# ------------------------------------
-# Dropdown Terminal
-# ------------------------------------
-set $dropterm foot --app-id foot
-for_window [app_id="foot"] {
-  floating enable
-  border pixel 1
-}
-bindsym $mod+backslash exec $dropterm
+# for_window [app_id="yazi-drop"] floating enable
+# for_window [app_id="yazi-drop"] border pixel 1
+# bindsym $mod+Shift+d exec foot --app-id yazi-drop yazi
 
 
-
-exec mako -r 0.5 -c 000000 -a 0.5 -t 2000
+# Notification history is managed by swaync.
 exec fcitx5
 
 ### Output configuration
@@ -119,7 +117,7 @@ input type:touchpad {
     bindsym $mod+Shift+q kill
 
     # Start your launcher
-    bindsym $mod+d exec $menu
+    bindsym $mod+Space exec $menu
 
     # Drag floating windows by holding down $mod and left mouse button.
     # Resize them with right mouse button + $mod.
@@ -205,7 +203,7 @@ input type:touchpad {
     bindsym $mod+Shift+space floating toggle
 
     # Swap focus between the tiling area and the floating area
-    bindsym $mod+space focus mode_toggle
+    # bindsym $mod+space focus mode_toggle
 
     # Move focus to the parent container
     bindsym $mod+a focus parent
@@ -254,8 +252,8 @@ bindsym $mod+r mode "resize"
     bindsym --locked XF86AudioRaiseVolume exec pactl set-sink-volume \@DEFAULT_SINK@ +5%
     bindsym --locked XF86AudioMicMute exec pactl set-source-mute \@DEFAULT_SOURCE@ toggle
     # Special keys to adjust brightness via brightnessctl
-    bindsym --locked XF86MonBrightnessDown exec brightnessctl set 5%-
-    bindsym --locked XF86MonBrightnessUp exec brightnessctl set 5%+
+    bindsym --locked XF86MonBrightnessDown exec ~/.config/waybar/scripts/brightness down
+    bindsym --locked XF86MonBrightnessUp exec ~/.config/waybar/scripts/brightness up
     # Special key to take a screenshot with grim
     bindsym Print exec grim
 
@@ -277,8 +275,18 @@ bindsym $mod+r mode "resize"
 #     }
 # }
 
+exec systemctl --user start swaync.service
 bar {
+    id desktop-wpagui
     swaybar_command waybar
 }
 
 include /etc/sway/config.d/*
+
+# Bar control dialogs
+for_window [app_id="org.pulseaudio.pavucontrol"] floating enable, resize set width 660 px height 520 px, move position center
+for_window [app_id="brightness-panel" ] floating enable, move position center
+for_window [class="bar-brightness"] floating enable, move position center
+
+for_window [app_id="wpa_gui"] floating enable, resize set width 480 px height 420 px, move position center
+for_window [class="wpa_gui"] floating enable, resize set width 480 px height 420 px, move position center
