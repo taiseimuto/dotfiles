@@ -1,0 +1,105 @@
+// Minimal Sway bar. Battery alerts are managed by scripts/battery-alert.py.
+{
+  "layer": "top",
+  "position": "top",
+  "height": 38,
+  "margin-top": 0,
+  "margin-left": 0,
+  "margin-right": 0,
+  "spacing": 4,
+  "reload_style_on_change": true,
+  "modules-left": [
+    "sway/workspaces",
+    "custom/battery-alert"
+  ],
+  "modules-center": [
+    "clock"
+  ],
+  "modules-right": [
+    "pulseaudio",
+    "network",
+    "bluetooth",
+    "battery"
+  ],
+  "pulseaudio": {
+    "format": "<span font_desc='JetBrainsMono Nerd Font Mono 12'>{icon}</span>  {volume}%",
+    "format-muted": "<span font_desc='JetBrainsMono Nerd Font Mono 12'>󰝟</span>  MUTE",
+    "format-icons": {
+      "default": [
+        "",
+        "",
+        ""
+      ],
+      "headphone": "",
+      "headset": ""
+    },
+    "scroll-step": 2,
+    "max-volume": 100,
+    "on-click": "pactl set-sink-mute @DEFAULT_SINK@ toggle",
+    "tooltip-format": "{desc}\n音量 {volume}% · クリックでミュート / スクロールで調整"
+  },
+  "network": {
+    "format-wifi": "<span font_desc='JetBrainsMono Nerd Font Mono 12'></span>  {signalStrength}%",
+    "format-ethernet": "<span font_desc='JetBrainsMono Nerd Font Mono 12'>󰈀</span>  LAN",
+    "format-linked": "<span font_desc='JetBrainsMono Nerd Font Mono 12'>󰈀</span>  LINK",
+    "format-disconnected": "<span font_desc='JetBrainsMono Nerd Font Mono 12'>󰖪</span>  OFF",
+    "format-disabled": "<span font_desc='JetBrainsMono Nerd Font Mono 12'>󰖪</span>  OFF",
+    "tooltip-format-wifi": "{essid}\n{ifname} · {ipaddr}\n信号強度 {signalStrength}%",
+    "tooltip-format-ethernet": "{ifname} · {ipaddr}",
+    "tooltip-format-disconnected": "ネットワーク未接続",
+    "tooltip-format-disabled": "Wi-Fi 無効",
+    "interval": 5
+  },
+  "bluetooth": {
+    "format": "<span font_desc='JetBrainsMono Nerd Font Mono 12'></span>  ON",
+    "format-disabled": "<span font_desc='JetBrainsMono Nerd Font Mono 12'></span>  OFF",
+    "format-off": "<span font_desc='JetBrainsMono Nerd Font Mono 12'></span>  OFF",
+    "format-no-controller": "<span font_desc='JetBrainsMono Nerd Font Mono 12'></span>  N/A",
+    "format-connected": "<span font_desc='JetBrainsMono Nerd Font Mono 12'></span>  {num_connections}",
+    "tooltip-format": "Bluetooth · {status}",
+    "tooltip-format-connected": "{num_connections} 台接続\n{device_enumerate}",
+    "tooltip-format-enumerate-connected": "{device_alias}"
+  },
+  "clock": {
+    "format": "<span font_desc='JetBrainsMono Nerd Font Mono 12'></span>  {0:%m.%d %a}  <span foreground='#626d82'>│</span>  <b>{0:%H:%M}</b>",
+    "format-alt": "<span font_desc='JetBrainsMono Nerd Font Mono 12'></span>  {0:%Y.%m.%d %a  %H:%M}",
+    "tooltip-format": "<b>{0:%Y年%m月%d日}</b>\n\n{calendar}",
+    "calendar": {
+      "mode": "month",
+      "format": {
+        "today": "<span color='#89b4fa'><b>{}</b></span>"
+      }
+    }
+  },
+  "battery": {
+    "bat": "BAT0",
+    "interval": 30,
+    "states": {
+      "warning": 20,
+      "critical": 10
+    },
+    "format": "<span font_desc='JetBrainsMono Nerd Font Mono 12'>{icon}</span>  {capacity}%",
+    "format-charging": "<span font_desc='JetBrainsMono Nerd Font Mono 12'></span>  {capacity}%",
+    "format-plugged": "<span font_desc='JetBrainsMono Nerd Font Mono 12'></span>  {capacity}%",
+    "format-full": "<span font_desc='JetBrainsMono Nerd Font Mono 12'></span>  100%",
+    "format-icons": [
+      "",
+      "",
+      "",
+      "",
+      ""
+    ],
+    "tooltip-format": "{capacity}% · {timeTo}\n{power:.1f} W"
+  },
+  "sway/workspaces": {
+    "format": "{index}",
+    "disable-scroll": true,
+    "all-outputs": false
+  },
+  "custom/battery-alert": {
+    "exec": "/usr/bin/python3 /home/mt/.config/waybar/scripts/battery-alert.py",
+    "return-type": "json",
+    "hide-empty-text": true,
+    "restart-interval": 5
+  }
+}

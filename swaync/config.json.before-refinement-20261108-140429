@@ -1,0 +1,28 @@
+{
+  "$schema": "/etc/xdg/swaync/configSchema.json",
+  "positionX": "right",
+  "positionY": "top",
+  "timeout": 5,
+  "timeout-low": 5,
+  "timeout-critical": 0,
+  "control-center-margin-top": 42,
+  "control-center-margin-right": 8,
+  "widgets": [
+    "title",
+    "dnd",
+    "notifications"
+  ],
+  "widget-config": {
+    "title": {
+      "text": "通知",
+      "clear-all-button": true,
+      "button-text": "すべて消去"
+    },
+    "dnd": {
+      "text": "通知を一時停止"
+    },
+    "notifications": {
+      "vexpand": true
+    }
+  }
+}

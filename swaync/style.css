@@ -1,0 +1,81 @@
+/* Keep the packaged widget layout, with a quiet navy palette matching Waybar. */
+@import url("/etc/xdg/swaync/style.css");
+
+:root {
+  --cc-bg: #171c26;
+  --noti-bg: 29, 36, 49;
+  --noti-bg-alpha: 1;
+  --noti-bg-darker: #171c26;
+  --noti-bg-hover: #252f40;
+  --noti-bg-focus: #283244;
+  --noti-border-color: #364156;
+  --noti-close-bg: #283244;
+  --noti-close-bg-hover: #364156;
+  --text-color: #dce3ef;
+  --text-color-disabled: #8190a6;
+  --bg-selected: #89b4fa;
+  --border-radius: 14px;
+  --notification-icon-size: 36px;
+  --notification-group-icon-size: 22px;
+  --font-size-summary: 13px;
+  --font-size-body: 12px;
+  --notification-shadow: 0 3px 12px rgba(0, 0, 0, 0.18);
+}
+
+* {
+  font-family: "Noto Sans CJK JP", "Noto Sans", sans-serif;
+  font-size: 12px;
+}
+
+.notification-row .notification-background { padding: 7px 12px; }
+.notification-row .notification-background .notification .notification-default-action {
+  padding: 18px 20px;
+}
+.notification-row .notification-background .notification .notification-default-action .notification-content {
+  min-height: 64px;
+}
+.notification-row .notification-background .notification .notification-default-action .notification-content .image {
+  margin: 2px 14px 2px 0;
+  border-radius: 10px;
+}
+.notification-row .notification-background .notification .notification-default-action .notification-content .text-box .summary {
+  font-weight: 600;
+}
+.notification-row .notification-background .notification .notification-default-action .notification-content .text-box .body {
+  color: #adbace;
+  margin-top: 7px;
+}
+.notification-row .notification-background .notification .notification-default-action .notification-content .text-box .time {
+  color: #8190a6;
+  font-size: 10px;
+  font-weight: 400;
+  margin-right: 16px;
+  margin-left: 10px;
+}
+.close-button {
+  min-width: 20px;
+  min-height: 20px;
+  margin-top: 12px;
+  margin-right: 16px;
+}
+.notification-row .notification-background .notification.critical {
+  border-color: #c88a96;
+}
+.control-center { border: 1px solid #364156; padding: 8px; }
+.widget-title { margin: 8px 8px 0; padding: 12px; }
+.widget-title > label { font-size: 16px; font-weight: 600; }
+.widget-title > button {
+  font-size: 11px;
+  padding: 6px 12px;
+  background: #283244;
+  color: #cbd3e1;
+  border: none;
+  box-shadow: none;
+}
+.widget-dnd { margin: 0 8px 8px; padding: 10px 12px; }
+.widget-dnd label { font-size: 12px; color: #adbace; }
+.notification-group .notification-group-headers { margin: 8px 20px; }
+.notification-group .notification-group-headers .notification-group-header {
+  font-size: 11px;
+  color: #8190a6;
+}

@@ -8,13 +8,15 @@
   ;; (dotfiles-name source-path tag ...)
   ;; tags:
   ;;   optional -- ask whether to install it (y/n) on `install`
-  '(("emacs_init.el"        ".emacs.d/init.el")
+  '(("emacs_init.el"        ".emacs.d/init.el"  optional)
     ("nvim"                 ".config/nvim")
     ("tmux.conf"            ".tmux.conf")
+    ("zshrc"                ".zshrc")
+    ("foot.ini"             ".config/foot/foot.ini")
     ("config.fish"          ".config/fish/config.fish"          optional)
     ("sway_config"          ".config/sway/config"          optional)
-    ("foot.ini"             ".config/foot/foot.ini"             optional)
-    ("zshrc"                ".zshrc")
+    ("waybar"               ".config/waybar" optional)
+    ("swaync"                ".config/swaync" optional)
     ("macskk_dict"          "Library/Containers/net.mtgto.inputmethod.macSKK/Data/Documents/Dictionaries/skk-jisyo.utf8"   optional)
     ("skk_user.dict"        ".local/share/fcitx5/skk/user.dict" optional)))
 

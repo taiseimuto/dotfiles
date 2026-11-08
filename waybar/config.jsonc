@@ -19,8 +19,29 @@
     "pulseaudio",
     "network",
     "bluetooth",
-    "battery"
+    "battery",
+    "custom/notification"
   ],
+  "custom/notification": {
+    "format": "<span font_desc='JetBrainsMono Nerd Font Mono 12'>{icon}</span>  {0}",
+    "format-icons": {
+      "notification": "󱅫",
+      "none": "󰂜",
+      "dnd-notification": "󰂠",
+      "dnd-none": "󰪓",
+      "inhibited-notification": "󰂛",
+      "inhibited-none": "󰪑",
+      "dnd-inhibited-notification": "󰂛",
+      "dnd-inhibited-none": "󰪑"
+    },
+    "return-type": "json",
+    "exec": "swaync-client -swb",
+    "restart-interval": 5,
+    "on-click": "swaync-client -t -sw",
+    "on-click-right": "swaync-client -d -sw",
+    "tooltip-format": "通知履歴 · 左クリックで開閉 / 右クリックで通知の一時停止",
+    "escape": true
+  },
   "pulseaudio": {
     "format": "<span font_desc='JetBrainsMono Nerd Font Mono 12'>{icon}</span>  {volume}%",
     "format-muted": "<span font_desc='JetBrainsMono Nerd Font Mono 12'>󰝟</span>  MUTE",
@@ -36,7 +57,8 @@
     "scroll-step": 2,
     "max-volume": 100,
     "on-click": "pactl set-sink-mute @DEFAULT_SINK@ toggle",
-    "tooltip-format": "{desc}\n音量 {volume}% · クリックでミュート / スクロールで調整"
+    "on-click-right": "pavucontrol --tab=3",
+    "tooltip-format": "{desc}\n音量 {volume}%\n左クリック: ミュート · スクロール: 音量調整\n右クリック: 出力デバイスの選択"
   },
   "network": {
     "format-wifi": "<span font_desc='JetBrainsMono Nerd Font Mono 12'></span>  {signalStrength}%",

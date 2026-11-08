@@ -8,7 +8,7 @@ export LANG=en_US.UTF-8
 # ---------------------------------------------------------------------------
 
 typeset -U path PATH   # 重複を自動的に除去する
-path=("$HOME/.local/bin" $path)
+path=("$HOME/bin" "$HOME/.local/bin" $path)
 
 
 
@@ -90,11 +90,22 @@ proxyoff() {
 
 
 # ---------------------------------------------------------------------------
+# nvm & brew
+# ---------------------------------------------------------------------------
+
+export NVM_DIR="$HOME/.nvm"
+zstyle ':omz:plugins:nvm' lazy yes
+
+eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv zsh)"
+
+# ---------------------------------------------------------------------------
 # Oh-My-Zsh
 # ---------------------------------------------------------------------------
 
+zstyle ':omz:compinit' use-cache yes
+
 ZSH_THEME="simple"
-plugins=(git copypath copyfile gh brew zsh-autosuggestions zsh-syntax-highlighting zsh-completions shrink-path)
+plugins=(git copypath copyfile gh brew zsh-autosuggestions zsh-syntax-highlighting shrink-path nvm)
 
 source $ZSH/oh-my-zsh.sh
 
@@ -123,4 +134,8 @@ fi
 
 
 
-eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv zsh)"
+# eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv zsh)"
+# 
+# export NVM_DIR="$HOME/.nvm"
+# [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+# [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion

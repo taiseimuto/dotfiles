@@ -1,0 +1,34 @@
+{
+  "$schema": "/etc/xdg/swaync/configSchema.json",
+  "positionX": "right",
+  "positionY": "top",
+  "timeout": 2,
+  "timeout-low": 2,
+  "timeout-critical": 0,
+  "control-center-margin-top": 42,
+  "control-center-margin-right": 8,
+  "widgets": [
+    "title",
+    "dnd",
+    "notifications"
+  ],
+  "widget-config": {
+    "title": {
+      "text": "通知",
+      "clear-all-button": true,
+      "button-text": "すべて消去"
+    },
+    "dnd": {
+      "text": "通知を一時停止"
+    },
+    "notifications": {
+      "vexpand": true
+    }
+  },
+  "notification-window-width": 400,
+  "control-center-width": 420,
+  "control-center-height": 640,
+  "notification-icon-size": 36,
+  "notification-body-image-width": 320,
+  "notification-body-image-height": 160
+}
